@@ -4,6 +4,7 @@ node_modules
 cache
 artifacts
 frontend/src/hardhat
+types
 
 lib-cov
 *.seed

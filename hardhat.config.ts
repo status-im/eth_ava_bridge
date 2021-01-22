@@ -94,5 +94,9 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  typechain: {
+    outDir: "types",
+    target: "ethers-v5",
+  }
 };
 export default config;

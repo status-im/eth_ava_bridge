@@ -3,7 +3,6 @@ import {DeployFunction} from 'hardhat-deploy/types';
 const {deployments, getNamedAccounts} = require('hardhat');
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    // code here
     const { deploy, execute, read, log } = deployments;
     const { deployer } = await getNamedAccounts();
 
@@ -14,16 +13,3 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     });
 };
 export default func;
-
-// module.exports = async ({
-//     getNamedAccounts,
-//     deployments,
-//     getChainId,
-//     getUnnamedAccounts,
-// }) => {
-//     const { deploy } = deployments;
-//     const { deployer } = await getNamedAccounts();
-
-//     // the following will only deploy "GenericMetaTxProcessor" if the contract was never deployed or if the code changed since last deployment
-
-// };
