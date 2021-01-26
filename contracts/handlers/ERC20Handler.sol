@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "../interfaces/IDepositExecute.sol";
 import "./HandlerHelpers.sol";
-import "../ERC20Safe.sol";
+import "../tokens/ERC20Safe.sol";
 
 /**
     @title Handles ERC20 deposits and deposit executions.
