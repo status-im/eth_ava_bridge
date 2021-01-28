@@ -1,5 +1,5 @@
 import { ethers,  } from "hardhat";
-import { Signer } from "ethers";
+import { BigNumber, Bytes, BytesLike, Signer } from "ethers";
 import chai from "chai";
 import { solidity } from "ethereum-waffle";
 
@@ -9,8 +9,9 @@ import { MintableERC20 } from "../types/MintableERC20";
 import {
   createResourceID,
   toWei,
+  generateDepositMetaData,
+  generateDepositDataHash,
   createERCDepositData,
-  generateDepositMetaData
 } from "../utils/helpers";
 
 chai.use(solidity);
@@ -19,7 +20,7 @@ const { expect  } = chai;
 describe("Bridge", function () {
   const ETHEREUM_CHAIN_ID: number = 1;
   const AVA_CHAIN_ID: number = 2;
-  const relayerThreshold: number = 0;
+  const relayerThreshold: number = 2;
   let accounts: Signer[];
   let bridge: Bridge;
   let erc20Handler: ERC20Handler;
@@ -34,9 +35,17 @@ describe("Bridge", function () {
   });
 
   it("should deploy bridge contract", async function () {
+    const [deployer, depositer, recipient, relayer1, relayer2] = accounts;
+    const initialRelayers = [await relayer1.getAddress(), await relayer2.getAddress()];
     deployerAddress = await accounts[0].getAddress();
     const bridgeFactory = await ethers.getContractFactory("Bridge");
-    const _bridge = await bridgeFactory.deploy(ETHEREUM_CHAIN_ID, [], relayerThreshold, 0, 100) as Bridge;
+    const _bridge = await bridgeFactory.deploy(
+      ETHEREUM_CHAIN_ID,
+      initialRelayers,
+      relayerThreshold,
+      0,
+      100
+    ) as Bridge;
     expect(_bridge).to.have.property('deployTransaction');
     bridge = _bridge;
   });
@@ -61,6 +70,8 @@ describe("Bridge", function () {
     );
   });
 
+  let depositNonce: BigNumber;
+  let encodedMetaData: string;
   it("Should deposit erc20 into the bridge", async function () {
     const [deployer, depositer, recipient] = accounts;
     depositerAddress = await depositer.getAddress();
@@ -69,14 +80,42 @@ describe("Bridge", function () {
     await sntEthereum.mint(depositerAddress, toWei("100"));
     await sntDepositer.approve(erc20Handler.address, toWei("1"));
 
-    const encodedMetaData = generateDepositMetaData(1, recipientAddress);
+    encodedMetaData = createERCDepositData(toWei('1'), recipientAddress);
     const bridgeDepositer = bridge.connect(depositer);
-    const deposit = bridgeDepositer.deposit(
+    const deposit = await bridgeDepositer.deposit(
       AVA_CHAIN_ID,
       sntEthereumResourceId,
       encodedMetaData
     );
-    await expect(deposit)
-      .to.emit(bridgeDepositer, 'Deposit');
+    const receipt = await deposit.wait(1);
+    const events = receipt.events;
+    const depositEvent = events?.find(x => x.event == 'Deposit');
+    depositNonce = depositEvent?.args?.depositNonce
+    expect(depositNonce).to.eq(1)
   });
+
+  it("Should execute deposit", async function () {
+    const [deployer, depositer, recipient, relayer1, relayer2] = accounts;
+    const bridgeRelayer1: Bridge = bridge.connect(relayer1);
+    const bridgeRelayer2: Bridge = bridge.connect(relayer2);
+    const depositDataHash = generateDepositDataHash(erc20Handler.address, encodedMetaData);
+    const relay1Vote = await bridgeRelayer1.voteProposal(
+      ETHEREUM_CHAIN_ID,
+      depositNonce,
+      sntEthereumResourceId,
+      depositDataHash
+    );
+    const relay2Vote = await bridgeRelayer2.voteProposal(
+      ETHEREUM_CHAIN_ID,
+      depositNonce,
+      sntEthereumResourceId,
+      depositDataHash
+    );
+    const executeProposal = await bridgeRelayer2.executeProposal(
+      ETHEREUM_CHAIN_ID,
+      depositNonce,
+      encodedMetaData,
+      sntEthereumResourceId
+    );
+  })
 });
