@@ -45,6 +45,10 @@ const goerli =
   process.env.GOERLI ||
   new providers.InfuraProvider("goerli").connection.url;
 
+const fuji =
+  process.env.FUJI ||
+  new providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc")
+
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
@@ -78,7 +82,15 @@ const config: HardhatUserConfig = {
       accounts,
       chainId: 5,
       saveDeployments: true,
-      tags: ["staging"]
+      tags: ["test"]
+    },
+    fuji: {
+      live: true,
+      url: 'https://api.avax-test.network/ext/bc/C/rpc',
+      accounts,
+      chainId: 0xa869,
+      saveDeployments: true,
+      tags: ["test"]
     }
   },
   solidity: {

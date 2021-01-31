@@ -29,8 +29,8 @@
     "test": "npx hardhat test",
     "node": "npx hardhat node --watch",
     "frontend": "cd frontend && npm run start",
-    "deploy:goerli": "hardhat deploy --network goerli"
-
+    "deploy:goerli": "hardhat deploy --network goerli",
+    "deploy:fuji": "hardhat deploy --network fuji"
   },
   "repository": {
     "type": "git",
