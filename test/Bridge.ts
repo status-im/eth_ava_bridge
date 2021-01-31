@@ -1,5 +1,5 @@
-import { ethers,  } from "hardhat";
-import { BigNumber, Bytes, BytesLike, Signer } from "ethers";
+import { ethers } from "hardhat";
+import { BigNumber, Signer } from "ethers";
 import chai from "chai";
 import { solidity } from "ethereum-waffle";
 
