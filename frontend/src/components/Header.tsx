@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { EnableEthereum } from '../localTypes'
 import useStyles from '../styles/header'
 import { getNetwork } from '../utils/network'
-import { Provider } from "@ethersproject/providers"
+import { Provider } from '@ethersproject/providers'
 
 
 const formatAccount = (account: string): string => {
@@ -15,9 +15,8 @@ const formatAccount = (account: string): string => {
 
 type HeaderProps = {
   account: string,
-  isStatus: boolean,
-  enableEthereum: EnableEthereum,
-  provider: Provider
+  enableEthereum: EnableEthereum | undefined,
+  provider: Provider | undefined
 }
 
 function Header({account, enableEthereum, provider}: HeaderProps) {
@@ -25,8 +24,8 @@ function Header({account, enableEthereum, provider}: HeaderProps) {
   const [network, sNetwork] = useState<string>()
 
   useEffect(() => {
-    if (account) getNetwork(provider, sNetwork)
-  }, [account])
+    if (provider) getNetwork(provider, sNetwork)
+  }, [provider])
 
   return (
     <div className={classes.root}>

@@ -1,29 +1,45 @@
 import React from 'react';
+import useStyles from './styles/app';
 import { providers } from 'ethers';
-import './App.css';
+import { Provider } from '@ethersproject/providers'
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { Greeter } from './components/Greeter';
-import { Bridge } from './components/Bridge'
-import { getAndSetProvider } from './utils/network'
+import { Bridge } from './components/Bridge';
+import { getAndSetProvider } from './utils/network';
+import Header from './components/Header';
 
 const { useState, useEffect } = React;
-const { Provider } = providers
 
 function App() {
-  const [provider, setProvider] = useState<typeof Provider>();
+  const classes: any = useStyles();
+  const [provider, setProvider] = useState<Provider>();
+  const [account, setAccount] = useState<string>('');
 
   useEffect(() => {
     if (!provider) getAndSetProvider(setProvider);
+    window.ethereum.on('networkChanged', function () {
+      getAndSetProvider(setProvider);
+    })
   })
-  console.log({provider})
+
+  useEffect(() => {
+    if (window.ethereum && window.ethereum.selectedAddress) setAccount(window.ethereum.selectedAddress);
+    window.ethereum.on('accountsChanged', function (accounts: Array<string>) {
+      setAccount(accounts[0]);
+    });
+  }, [window.ethereum.selectedAddress])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <Symfoni autoInit={true} >
-          <Bridge></Bridge>
-        </Symfoni>
-      </header>
-    </div>
+    <Symfoni autoInit={true} >
+      <div className={classes.root}>
+        <Header
+          account={account}
+          provider={provider}
+          enableEthereum={undefined}
+        />
+        <Bridge></Bridge>
+      </div>
+    </Symfoni>
   );
 }
 
