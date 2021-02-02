@@ -3,7 +3,15 @@ import { BridgeContext, SymfoniBridge } from "./../hardhat/SymfoniContext";
 import { Wallet, providers, Contract, VoidSigner } from "ethers";
 import { Bridge as IBridge } from "../types/Bridge"
 import { SNT_ADDRESS } from "../../constants/goerliAddress";
+import { Formik, FormikProps } from 'formik';
+import StatusTextField from './base/TextField';
+import useStyles from '../styles/bridge';
+import StatusButton from './base/Button';
 
+
+type IBridgeInfo = {
+  amount: string,
+}
 const wallet = Wallet.createRandom();
 
 interface Props { }
@@ -17,11 +25,13 @@ const goerliVoidsigner = new VoidSigner(wallet.address, goerliProvider);
 
 
 export const Bridge: React.FC<Props> = () => {
+  const classes: any = useStyles()
   const bridge: SymfoniBridge = useContext(BridgeContext);
   const [message, setMessage] = useState("");
   const [inputGreeting, setInputGreeting] = useState("");
   const [goerliBridge, setGoerliBridge] = useState<IBridge>();
   const [fujiBridge, setFujiBridge] = useState<IBridge>();
+  const { fieldWidth } = classes;
   useEffect(() => {
     const doAsync = async () => {
       if (!bridge.instance) return
@@ -54,10 +64,40 @@ export const Bridge: React.FC<Props> = () => {
     }
   }
   return (
-    <div>
-      <p>{message}</p>
-      <input onChange={(e) => setInputGreeting(e.target.value)}></input>
-      <button onClick={(e) => handleSetGreeting(e)}>Set</button>
-    </div>
+    <Formik
+      initialValues={{
+        amount: '',
+      }}
+      onSubmit={async (values) => {}}
+    >
+      {({
+        values,
+        errors,
+        handleSubmit,
+        handleChange,
+        handleBlur,
+        setFieldValue
+      }: FormikProps<IBridgeInfo>) => {
+        return (
+          <form className={classes.root} onSubmit={handleSubmit}>
+            <StatusTextField
+              className={fieldWidth}
+              name="amount"
+              label="Enter amount of SNT to send across bridge"
+              idFor="Title"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.amount}
+            />
+            <StatusButton
+              className={fieldWidth}
+              buttonText="Submit"
+              onClick={handleSubmit}
+            />
+          </form>
+      )}
+      }
+      </Formik>
+
   )
 }
