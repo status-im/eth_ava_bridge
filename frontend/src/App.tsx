@@ -1,5 +1,7 @@
 import React from 'react';
 import useStyles from './styles/app';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './styles/theme';
 import { providers } from 'ethers';
 import { Provider } from '@ethersproject/providers'
 import { Symfoni } from "./hardhat/SymfoniContext";
@@ -30,16 +32,18 @@ function App() {
   }, [window.ethereum.selectedAddress])
 
   return (
-    <Symfoni autoInit={true} >
-      <div className={classes.root}>
-        <Header
-          account={account}
-          provider={provider}
-          enableEthereum={undefined}
-        />
-        <Bridge></Bridge>
-      </div>
-    </Symfoni>
+    <ThemeProvider theme={theme}>
+      <Symfoni autoInit={true} >
+        <div className={classes.root}>
+          <Header
+            account={account}
+            provider={provider}
+            enableEthereum={undefined}
+          />
+          <Bridge></Bridge>
+        </div>
+      </Symfoni>
+    </ThemeProvider>
   );
 }
 
