@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { BridgeContext, SymfoniBridge } from "./../hardhat/SymfoniContext";
 import { Wallet, providers, Contract, VoidSigner } from "ethers";
 import { Bridge as IBridge } from "../types/Bridge"
-import { SNT_ETHEREUM } from "../constants/goerliAddress";
+import { SNT_ADDRESS } from "../../constants/goerliAddress";
 
 const wallet = Wallet.createRandom();
 
@@ -18,8 +18,6 @@ const goerliVoidsigner = new VoidSigner(wallet.address, goerliProvider);
 
 export const Bridge: React.FC<Props> = () => {
   const bridge: SymfoniBridge = useContext(BridgeContext);
-  /* fujiBridge.factory?.connect(fujiSigner);
-   * fujiBridge.factory?.attach(FUJI_BRIDGE); */
   const [message, setMessage] = useState("");
   const [inputGreeting, setInputGreeting] = useState("");
   const [goerliBridge, setGoerliBridge] = useState<IBridge>();
@@ -59,7 +57,7 @@ export const Bridge: React.FC<Props> = () => {
     <div>
       <p>{message}</p>
       <input onChange={(e) => setInputGreeting(e.target.value)}></input>
-      <button onClick={(e) => handleSetGreeting(e)}>Set greeting</button>
+      <button onClick={(e) => handleSetGreeting(e)}>Set</button>
     </div>
   )
 }
