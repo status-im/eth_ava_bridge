@@ -1,20 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BridgeContext, SymfoniBridge } from "./../hardhat/SymfoniContext";
-import { Wallet, providers, Contract, VoidSigner } from "ethers";
+import { Wallet, providers, Contract, VoidSigner, BigNumberish } from "ethers";
+import Typography from '@material-ui/core/Typography';
 import { Bridge as IBridge } from "../types/Bridge"
-import { SNT_ADDRESS } from "../../constants/goerliAddress";
+import { SNT_ADDRESS } from "../constants/goerliAddress";
 import { Formik, FormikProps } from 'formik';
 import StatusTextField from './base/TextField';
 import useStyles from '../styles/bridge';
 import StatusButton from './base/Button';
-
+import { ETHEREUM_CHAIN_ID, AVA_CHAIN_ID } from '../constants/networks';
+import { createResourceID, createERCDepositData, toWei } from '../utils/helpers';
+import { Provider } from '@ethersproject/providers';
+import { getISntEthereum } from '../utils/contracts';
+import { ERC20 } from "../types/ERC20";
+import { fromWei } from "../utils/helpers"
+import { getSetBalance } from "../utils/contracts";
 
 type IBridgeInfo = {
   amount: string,
+  account: string,
 }
 const wallet = Wallet.createRandom();
 
-interface Props { }
+interface Props {
+  account: string,
+  provider: Provider | undefined,
+  sntEthereum: ERC20 | undefined
+}
 const FUJI_BRIDGE = '0xE57Eb49689bCAE4dE61D326F7E79Bd14aB527f0f';
 const GOERLI_BRIDGE = '0xD0E461b1Dc56503fC72565FA964C28E274146D44';
 const fujiProvider = new providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc");
@@ -24,13 +36,14 @@ const fujiVoidSigner = new VoidSigner(wallet.address, fujiProvider);
 const goerliVoidsigner = new VoidSigner(wallet.address, goerliProvider);
 
 
-export const Bridge: React.FC<Props> = () => {
+export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum }) => {
   const classes: any = useStyles()
   const bridge: SymfoniBridge = useContext(BridgeContext);
   const [message, setMessage] = useState("");
   const [inputGreeting, setInputGreeting] = useState("");
   const [goerliBridge, setGoerliBridge] = useState<IBridge>();
   const [fujiBridge, setFujiBridge] = useState<IBridge>();
+  const [sntEthereumBalance, setSntEthereumBalance] = useState<BigNumberish>()
   const { fieldWidth } = classes;
   useEffect(() => {
     const doAsync = async () => {
@@ -52,6 +65,10 @@ export const Bridge: React.FC<Props> = () => {
     doAsync();
   }, [bridge])
 
+  useEffect(() => {
+    getSetBalance(sntEthereum, account, setSntEthereumBalance);
+  }, [account])
+
   const handleSetGreeting = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     if (!bridge.instance) throw Error("Bridge instance not ready")
@@ -67,8 +84,18 @@ export const Bridge: React.FC<Props> = () => {
     <Formik
       initialValues={{
         amount: '',
+        account
       }}
-      onSubmit={async (values) => {}}
+      onSubmit={async (values) => {
+        const { amount, account } = values;
+        const resourceId = createResourceID(SNT_ADDRESS, ETHEREUM_CHAIN_ID);
+        const encodedData = createERCDepositData(toWei(amount), account);
+        const tx = await bridge.instance?.deposit(
+          AVA_CHAIN_ID,
+          resourceId,
+          encodedData
+        );
+      }}
     >
       {({
         values,
@@ -80,14 +107,26 @@ export const Bridge: React.FC<Props> = () => {
       }: FormikProps<IBridgeInfo>) => {
         return (
           <form className={classes.root} onSubmit={handleSubmit}>
+            {!!sntEthereumBalance && <Typography className={classes.balanceText}>
+              SNT Ethereum balance: {fromWei(sntEthereumBalance)}
+            </Typography>}
             <StatusTextField
               className={fieldWidth}
               name="amount"
               label="Enter amount of SNT to send across bridge"
-              idFor="Title"
+              idFor="amount"
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.amount}
+            />
+            <StatusTextField
+              className={fieldWidth}
+              name="account"
+              label="account receiving across bridge"
+              idFor="account"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.account}
             />
             <StatusButton
               className={fieldWidth}
@@ -97,7 +136,7 @@ export const Bridge: React.FC<Props> = () => {
           </form>
       )}
       }
-      </Formik>
+    </Formik>
 
   )
 }

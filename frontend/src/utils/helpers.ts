@@ -4,9 +4,11 @@ const {
   hexZeroPad,
   hexlify,
   formatBytes32String,
-  keccak256
+  keccak256,
+  formatEther
 } = utils;
 
+export const fromWei = (x: BigNumberish) => Number(formatEther(x));
 const AbiCoder = new utils.AbiCoder;
 export const toHex = (covertThis: any, padding: any) => {
   return hexZeroPad(hexlify(covertThis), padding);
@@ -22,6 +24,7 @@ export const abiEncode = (valueTypes: any[], values: any[]) => {
 };
 
 export const generateDepositMetaData = (amount: number, recipientAddress: string) => {
+  console.log({recipientAddress})
   const addressLength = 20;
   return abiEncode(
     ['uint256', 'uint256', 'bytes'],

@@ -5,7 +5,7 @@ import { EnableEthereum } from '../localTypes'
 import useStyles from '../styles/header'
 import { getNetwork } from '../utils/network'
 import { Provider } from '@ethersproject/providers'
-
+import { ERC20 } from "../types/ERC20";
 
 const formatAccount = (account: string): string => {
   const start = account.slice(0,6)
@@ -16,10 +16,12 @@ const formatAccount = (account: string): string => {
 type HeaderProps = {
   account: string,
   enableEthereum: EnableEthereum | undefined,
-  provider: Provider | undefined
+  provider: Provider | undefined,
+  sntEthereum: ERC20 | undefined
 }
 
-function Header({account, enableEthereum, provider}: HeaderProps) {
+
+function Header({account, enableEthereum, provider, sntEthereum}: HeaderProps) {
   const classes: any = useStyles()
   const [network, sNetwork] = useState<string>()
 
