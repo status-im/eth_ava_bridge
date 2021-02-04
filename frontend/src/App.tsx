@@ -3,7 +3,7 @@ import useStyles from './styles/app';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './styles/theme';
 import { providers } from 'ethers';
-import { Provider } from '@ethersproject/providers'
+import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { Greeter } from './components/Greeter';
 import { Bridge } from './components/Bridge';
@@ -17,7 +17,7 @@ const { useState, useEffect } = React;
 
 function App() {
   const classes: any = useStyles();
-  const [provider, setProvider] = useState<Provider>();
+  const [provider, setProvider] = useState<Web3Provider>();
   const [ethereumProvider, setEthereumProvider] = useState<Provider>();
   const [account, setAccount] = useState<string>('');
   const [sntEthereum, setSntEthereum] = useState<ERC20>();
