@@ -8,6 +8,7 @@ import "@symfoni/hardhat-react";
 import "hardhat-typechain";
 import "@typechain/ethers-v5";
 import "hardhat-deploy";
+import "@tenderly/hardhat-tenderly";
 import { Wallet, providers } from "ethers";
 import path from 'path';
 
