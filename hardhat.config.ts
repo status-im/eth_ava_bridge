@@ -10,6 +10,7 @@ import "@typechain/ethers-v5";
 import "hardhat-deploy";
 import "@tenderly/hardhat-tenderly";
 import { Wallet, providers } from "ethers";
+import "@nomiclabs/hardhat-etherscan";
 import path from 'path';
 
 const bip39 = require("bip39");
@@ -64,6 +65,9 @@ const config: HardhatUserConfig = {
     deployer: {
       default: 0
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN
   },
   networks: {
     localhost: {
