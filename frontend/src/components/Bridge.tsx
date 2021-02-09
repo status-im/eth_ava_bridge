@@ -15,6 +15,7 @@ import { getISntEthereum } from '../utils/contracts';
 import { ERC20 } from "../types/ERC20";
 import { fromWei } from "../utils/helpers"
 import { getSetBalance } from "../utils/contracts";
+import { ethereumSNTHandlerAddress } from "../constants/bridges";
 
 type IBridgeInfo = {
   amount: string,
@@ -25,7 +26,8 @@ const wallet = Wallet.createRandom();
 interface Props {
   account: string,
   provider: Web3Provider | undefined,
-  sntEthereum: ERC20 | undefined
+  sntEthereum: ERC20 | undefined,
+  ethereumBridge: IBridge
 }
 const FUJI_BRIDGE = '0xE57Eb49689bCAE4dE61D326F7E79Bd14aB527f0f';
 const GOERLI_BRIDGE = '0xD0E461b1Dc56503fC72565FA964C28E274146D44';
@@ -36,7 +38,7 @@ const fujiVoidSigner = new VoidSigner(wallet.address, fujiProvider);
 const goerliVoidsigner = new VoidSigner(wallet.address, goerliProvider);
 
 
-export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum }) => {
+export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum, ethereumBridge }) => {
   const classes: any = useStyles()
   const bridge: SymfoniBridge = useContext(BridgeContext);
   const [message, setMessage] = useState("");
@@ -69,17 +71,6 @@ export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum }) => {
     getSetBalance(sntEthereum, account, setSntEthereumBalance);
   }, [account])
 
-  const handleSetGreeting = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault()
-    if (!bridge.instance) throw Error("Bridge instance not ready")
-    if (bridge.instance) {
-      //const tx = await bridge.instance.setGreeting(inputGreeting)
-      const tx = await bridge.instance._expiry();
-      //const fuji = await fujiBridge.instance?._expiry();
-      const goerli = await goerliBridge?._expiry();
-      console.log("expiry", {tx, goerli}, goerliBridge?.address);
-    }
-  }
   return (
     <Formik
       initialValues={{
@@ -94,15 +85,16 @@ export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum }) => {
         if (!provider) return;
         const signer = provider.getSigner()
         const sntActiveProvider = sntEthereum?.connect(signer);
+        const activeBridge = ethereumBridge.connect(signer);
         if(!bridge || !bridge.instance) return
-        //TODO check approval
-
-        const approved = await sntActiveProvider?.allowance(account, bridge.instance.address);
+        const approved = await sntActiveProvider?.allowance(account, ethereumSNTHandlerAddress);
         if (approved?.lt(weiAmount)) {
           const amt = approved.eq(0) ? weiAmount : toWei('0');
-          await sntActiveProvider?.approve(bridge.instance?.address, amt);
+          //TODO approve handler not bridge
+          await sntActiveProvider?.approve(ethereumSNTHandlerAddress, amt);
         } else {
-          const deposit = await bridge.instance?.deposit(
+          console.log({AVA_CHAIN_ID, resourceId, encodedData});
+          const deposit = await activeBridge.deposit(
             AVA_CHAIN_ID,
             resourceId,
             encodedData

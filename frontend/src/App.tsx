@@ -9,9 +9,11 @@ import { Greeter } from './components/Greeter';
 import { Bridge } from './components/Bridge';
 import { getAndSetProvider } from './utils/network';
 import { ERC20 } from './types/ERC20';
+import { Bridge as IBridge } from './types/Bridge';
 import Header from './components/Header';
-import { getISntEthereum } from './utils/contracts';
+import { getISntEthereum, getBridge } from './utils/contracts';
 import { goerliProvider } from './utils/providers'
+import { ethereumAddress } from './constants/bridges';
 
 const { useState, useEffect } = React;
 
@@ -21,6 +23,7 @@ function App() {
   const [ethereumProvider, setEthereumProvider] = useState<Provider>();
   const [account, setAccount] = useState<string>('');
   const [sntEthereum, setSntEthereum] = useState<ERC20>();
+  const [ethereumBridge, setEthereumBridge] = useState<IBridge>();
 
   useEffect(() => {
     if (!provider) getAndSetProvider(setProvider);
@@ -34,6 +37,13 @@ function App() {
       const snt: ERC20 = getISntEthereum(goerliProvider)
       setSntEthereum(snt);
     }
+  }, [provider])
+
+  useEffect(() => {
+    //TODO use ethereum provider
+    if (!provider) return
+    const bridge: IBridge = getBridge(ethereumAddress, provider);
+    setEthereumBridge(bridge);
   }, [provider])
 
   useEffect(() => {
@@ -53,11 +63,12 @@ function App() {
             enableEthereum={undefined}
             sntEthereum={sntEthereum}
           />
-          <Bridge
+          {!!ethereumBridge && <Bridge
             account={account}
             provider={provider}
             sntEthereum={sntEthereum}
-          />
+            ethereumBridge={ethereumBridge}
+          />}
         </div>
       </Symfoni>
     </ThemeProvider>
