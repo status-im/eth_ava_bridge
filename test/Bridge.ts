@@ -6,6 +6,8 @@ import { solidity } from "ethereum-waffle";
 import { Bridge } from "../types/Bridge";
 import { ERC20Handler } from "../types/ERC20Handler";
 import { MintableERC20 } from "../types/MintableERC20";
+import { ERC20Safe } from "../types/ERC20Safe";
+import { ERC20PresetMinterPauser } from "../types/ERC20PresetMinterPauser";
 import {
   createResourceID,
   toWei,
@@ -25,9 +27,10 @@ describe("Bridge", function () {
   let EthereumBridge: Bridge;
   let AvalancheBridge: Bridge;
   let ethereumErc20Handler: ERC20Handler;
+  let avalancheErc20Handler: ERC20Handler;
   let sntEthereum: MintableERC20;
   let sntEthereumResourceId: string;
-  let sntAvalanche: MintableERC20;
+  let sntAvalanche: ERC20PresetMinterPauser;
   let sntAvalancheResourceId: string;
   let deployerAddress: string;
   let depositerAddress: string;
@@ -64,8 +67,9 @@ describe("Bridge", function () {
 
   it("Should create erc20 handler", async function () {
     const erc20Factory = await ethers.getContractFactory("MintableERC20");
+    const safeErc20Factory = await ethers.getContractFactory("ERC20PresetMinterPauser");
     const _snt = await erc20Factory.deploy("SNT", "SNT") as MintableERC20;
-    const _sntAvalanche = await erc20Factory.deploy("aSNT", "aSNT") as MintableERC20;
+    const _sntAvalanche = await safeErc20Factory.deploy("SNT", "SNT") as ERC20PresetMinterPauser;
     sntEthereum = _snt;
     sntAvalanche = _sntAvalanche;
     sntEthereumResourceId = createResourceID(sntEthereum.address, ETHEREUM_CHAIN_ID);
@@ -77,12 +81,26 @@ describe("Bridge", function () {
       [sntEthereum.address],
       []
     ) as ERC20Handler;
+    const _avalancheErc20Handler = await erc20HandlerFactory.deploy(
+      AvalancheBridge.address,
+      [sntAvalancheResourceId],
+      [sntAvalanche.address],
+      []
+    ) as ERC20Handler;
     ethereumErc20Handler = _ethereumErc20Handler;
+    avalancheErc20Handler = _avalancheErc20Handler;
     await EthereumBridge.adminSetResource(
       ethereumErc20Handler.address,
       sntEthereumResourceId,
       sntEthereum.address
     );
+    await AvalancheBridge.adminSetResource(
+      avalancheErc20Handler.address,
+      sntAvalancheResourceId,
+      sntAvalanche.address
+    );
+    // TODO
+    await sntAvalanche.grantRole(await sntAvalanche.MINTER_ROLE(), avalancheErc20Handler.address);
   });
 
   let depositNonce: BigNumber;
