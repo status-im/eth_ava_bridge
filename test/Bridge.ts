@@ -85,7 +85,7 @@ describe("Bridge", function () {
       AvalancheBridge.address,
       [sntAvalancheResourceId],
       [sntAvalanche.address],
-      []
+      [sntAvalanche.address]
     ) as ERC20Handler;
     ethereumErc20Handler = _ethereumErc20Handler;
     avalancheErc20Handler = _avalancheErc20Handler;
@@ -99,13 +99,13 @@ describe("Bridge", function () {
       sntAvalancheResourceId,
       sntAvalanche.address
     );
-    // TODO
     await sntAvalanche.grantRole(await sntAvalanche.MINTER_ROLE(), avalancheErc20Handler.address);
+    await AvalancheBridge.adminSetResource(avalancheErc20Handler.address, sntAvalancheResourceId, sntAvalanche.address);
   });
 
   let depositNonce: BigNumber;
   let encodedMetaData: string;
-  it("Should deposit erc20 into the bridge", async function () {
+  it("Should deposit SNT into the Ethereum bridge", async function () {
     const [deployer, depositer, recipient] = accounts;
     depositerAddress = await depositer.getAddress();
     recipientAddress = await recipient.getAddress();
@@ -127,28 +127,32 @@ describe("Bridge", function () {
     expect(depositNonce).to.eq(1)
   });
 
-  it("Should execute deposit", async function () {
+  it("Should execute deposit on destination bridge", async function () {
     const [deployer, depositer, recipient, relayer1, relayer2] = accounts;
-    const bridgeRelayer1: Bridge = EthereumBridge.connect(relayer1);
-    const bridgeRelayer2: Bridge = EthereumBridge.connect(relayer2);
-    const depositDataHash = generateDepositDataHash(ethereumErc20Handler.address, encodedMetaData);
+    const bridgeRelayer1: Bridge = AvalancheBridge.connect(relayer1);
+    const bridgeRelayer2: Bridge = AvalancheBridge.connect(relayer2);
+    const depositDataHash = generateDepositDataHash(avalancheErc20Handler.address, encodedMetaData);
+    const pre = await sntAvalanche.balanceOf(await recipient.getAddress());
     const relay1Vote = await bridgeRelayer1.voteProposal(
       ETHEREUM_CHAIN_ID,
       depositNonce,
-      sntEthereumResourceId,
+      sntAvalancheResourceId,
       depositDataHash
     );
     const relay2Vote = await bridgeRelayer2.voteProposal(
       ETHEREUM_CHAIN_ID,
       depositNonce,
-      sntEthereumResourceId,
+      sntAvalancheResourceId,
       depositDataHash
     );
     const executeProposal = await bridgeRelayer2.executeProposal(
       ETHEREUM_CHAIN_ID,
       depositNonce,
       encodedMetaData,
-      sntEthereumResourceId
+      sntAvalancheResourceId
     );
+    const post = await sntAvalanche.balanceOf(await recipient.getAddress());
+    expect(pre).to.eq(0);
+    expect(post).to.eq(toWei('1'));
   })
 });
