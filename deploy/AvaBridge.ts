@@ -1,3 +1,4 @@
+import { Signer } from "ethers";
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import { DeployFunction, DeployResult} from 'hardhat-deploy/types';
 import { ethers, deployments, getNamedAccounts } from "hardhat";
@@ -23,12 +24,16 @@ const relayerThreshold: number = 1;
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy, execute, read, log } = deployments;
   const { deployer } = await getNamedAccounts();
-  const [signer] = await ethers.getSigners();
+  const signers: Signer[] = await ethers.getSigners();
+  const [signer] = signers;
+  const signerAddress = await signer.getAddress();
+  console.log({signerAddress})
 
   const initialRelayers = [deployer];
   let sntAvalancheDeploy: DeployResult = await deploy("ERC20PresetMinterPauser", {
     from: deployer,
-    args: ["SNT", "SNT"]
+    args: ["SNT", "SNT"],
+    log: true
   });
 
   const bridgeDeploy: DeployResult = await deploy("Bridge", {
@@ -65,4 +70,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await sntAvalanche.grantRole(await sntAvalanche.MINTER_ROLE(), erc20Handler.address);
   await bridge.adminSetResource(erc20Handler.address, sntAvalancheResourceId, sntAvalanche.address);
 };
+func.tags = ["avalanche"];
 export default func;

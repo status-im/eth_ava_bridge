@@ -31,8 +31,9 @@
     "test": "npx hardhat test",
     "node": "npx hardhat node --watch",
     "frontend": "cd frontend && npm run start",
-    "deploy:goerli": "hardhat deploy --network goerli deploy/Bridge.ts",
-    "deploy:fuji": "hardhat deploy --network fuji deploy/AvaBridge.ts"
+    "deploy:goerli": "hardhat deploy --network goerli --deploy-scripts deploy/Bridge.ts",
+    "deploy:fuji": "hardhat deploy --network fuji --tags avalanche",
+    "deploy:fuji:reset": "hardhat deploy --network fuji --tags avalanche --reset"
   },
   "repository": {
     "type": "git",
