@@ -11,7 +11,6 @@ import StatusButton from './base/Button';
 import { ETHEREUM_CHAIN_ID, AVA_CHAIN_ID } from '../constants/networks';
 import { createResourceID, createERCDepositData, toWei } from '../utils/helpers';
 import { Web3Provider } from '@ethersproject/providers';
-import { getISntEthereum } from '../utils/contracts';
 import { ERC20 } from "../types/ERC20";
 import { fromWei } from "../utils/helpers"
 import { getSetBalance } from "../utils/contracts";
@@ -27,6 +26,7 @@ interface Props {
   account: string,
   provider: Web3Provider | undefined,
   sntEthereum: ERC20 | undefined,
+  sntAvalanche: ERC20 | undefined,
   ethereumBridge: IBridge
 }
 const FUJI_BRIDGE = '0xE57Eb49689bCAE4dE61D326F7E79Bd14aB527f0f';
@@ -38,14 +38,15 @@ const fujiVoidSigner = new VoidSigner(wallet.address, fujiProvider);
 const goerliVoidsigner = new VoidSigner(wallet.address, goerliProvider);
 
 
-export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum, ethereumBridge }) => {
+export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum, sntAvalanche, ethereumBridge }) => {
   const classes: any = useStyles()
   const bridge: SymfoniBridge = useContext(BridgeContext);
   const [message, setMessage] = useState("");
   const [inputGreeting, setInputGreeting] = useState("");
   const [goerliBridge, setGoerliBridge] = useState<IBridge>();
   const [fujiBridge, setFujiBridge] = useState<IBridge>();
-  const [sntEthereumBalance, setSntEthereumBalance] = useState<BigNumberish>()
+  const [sntEthereumBalance, setSntEthereumBalance] = useState<BigNumberish>();
+  const [sntAvalancheBalance, setSntAvalancheBalance] = useState<BigNumberish>();
   const { fieldWidth } = classes;
   useEffect(() => {
     const doAsync = async () => {
@@ -69,6 +70,10 @@ export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum, ethere
 
   useEffect(() => {
     getSetBalance(sntEthereum, account, setSntEthereumBalance);
+  }, [account])
+
+  useEffect(() => {
+    getSetBalance(sntAvalanche, account, setSntAvalancheBalance);
   }, [account])
 
   return (
@@ -118,6 +123,9 @@ export const Bridge: React.FC<Props> = ({ account, provider, sntEthereum, ethere
           <form className={classes.root} onSubmit={handleSubmit}>
             {!!sntEthereumBalance && <Typography className={classes.balanceText}>
               SNT Ethereum balance: {fromWei(sntEthereumBalance)}
+            </Typography>}
+            {!!sntAvalancheBalance && <Typography className={classes.balanceText}>
+              SNT Avalanche balance: {fromWei(sntAvalancheBalance)}
             </Typography>}
             <StatusTextField
               className={fieldWidth}

@@ -11,8 +11,8 @@ import { getAndSetProvider } from './utils/network';
 import { ERC20 } from './types/ERC20';
 import { Bridge as IBridge } from './types/Bridge';
 import Header from './components/Header';
-import { getISntEthereum, getBridge } from './utils/contracts';
-import { goerliProvider } from './utils/providers'
+import { getSNTAvalanche, getSNTEthereum, getBridge } from './utils/contracts';
+import { goerliProvider, fujiProvider } from './utils/providers'
 import { ethereumAddress } from './constants/bridges';
 
 const { useState, useEffect } = React;
@@ -23,6 +23,7 @@ function App() {
   const [ethereumProvider, setEthereumProvider] = useState<Provider>();
   const [account, setAccount] = useState<string>('');
   const [sntEthereum, setSntEthereum] = useState<ERC20>();
+  const [sntAvalanche, setSntAvalanche] = useState<ERC20>();
   const [ethereumBridge, setEthereumBridge] = useState<IBridge>();
 
   useEffect(() => {
@@ -34,8 +35,10 @@ function App() {
 
   useEffect(() => {
     if (provider) {
-      const snt: ERC20 = getISntEthereum(goerliProvider)
-      setSntEthereum(snt);
+      const sntEthereum: ERC20 = getSNTEthereum(goerliProvider);
+      const sntAvalanche: ERC20 = getSNTAvalanche(fujiProvider);
+      setSntEthereum(sntEthereum);
+      setSntAvalanche(sntAvalanche);
     }
   }, [provider])
 
@@ -67,6 +70,7 @@ function App() {
             account={account}
             provider={provider}
             sntEthereum={sntEthereum}
+            sntAvalanche={sntAvalanche}
             ethereumBridge={ethereumBridge}
           />}
         </div>
