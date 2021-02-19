@@ -27,7 +27,7 @@ interface Props {
   provider: Web3Provider | undefined,
   sntEthereum: ERC20 | undefined,
   sntAvalanche: ERC20 | undefined,
-  ethereumBridge: IBridge
+  ethereumBridge: IBridge,
 }
 const FUJI_BRIDGE = '0xE57Eb49689bCAE4dE61D326F7E79Bd14aB527f0f';
 const GOERLI_BRIDGE = '0xD0E461b1Dc56503fC72565FA964C28E274146D44';
