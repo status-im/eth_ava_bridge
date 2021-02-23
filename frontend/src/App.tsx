@@ -7,6 +7,7 @@ import { Provider, Web3Provider } from '@ethersproject/providers'
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { Greeter } from './components/Greeter';
 import { Bridge } from './components/Bridge';
+import { AdminBridge } from './components/AdminBridge';
 import { getAndSetProvider } from './utils/network';
 import { ERC20 } from './types/ERC20';
 import { Bridge as IBridge } from './types/Bridge';
@@ -26,6 +27,7 @@ function App() {
   const [sntAvalanche, setSntAvalanche] = useState<ERC20>();
   const [ethereumBridge, setEthereumBridge] = useState<IBridge>();
   const [avalancheBridge, setAvalancheBridge] = useState<IBridge>();
+  const [isRelayer, setIsRelayer] = useState<boolean>();
 
   useEffect(() => {
     if (!provider) getAndSetProvider(setProvider);
@@ -44,10 +46,11 @@ function App() {
   }, [provider])
 
   useEffect(() => {
-    //TODO use ethereum provider
     if (!provider) return
-    //TODO implement ava bridge
     const avalancheBridge: IBridge = getBridge(fujiAddress, fujiProvider);
+    avalancheBridge.isRelayer(account).then(isRelayer => {
+      setIsRelayer(isRelayer)
+    });
     const ethereumBridge: IBridge = getBridge(ethereumAddress, provider);
     setEthereumBridge(ethereumBridge);
     setAvalancheBridge(avalancheBridge);
@@ -77,6 +80,12 @@ function App() {
             sntAvalanche={sntAvalanche}
             ethereumBridge={ethereumBridge}
           />}
+          {!!isRelayer &&  <AdminBridge
+                           account={account}
+                           provider={provider}
+                           sntEthereum={sntEthereum}
+                           sntAvalanche={sntAvalanche}
+                           ethereumBridge={ethereumBridge} />}
         </div>
       </Symfoni>
     </ThemeProvider>

@@ -6,7 +6,7 @@ const useStyles = makeStyles(theme => ({
         gridTemplateColumns: 'repeat(48, [col] 1fr)',
         gridTemplateRows: '3rem 5rem auto auto',
         [theme.breakpoints.up('md')]: {
-            gridTemplateRows: '4rem 4rem auto auto 6rem'
+            gridTemplateRows: '3rem 25rem'
         }
     }
 }));
