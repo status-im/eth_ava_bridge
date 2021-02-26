@@ -1,6 +1,6 @@
 import { Wallet, providers, Contract, VoidSigner } from "ethers";
 import { SNT_ADDRESS as SNT_ETHEREUM } from "../constants/goerliAddress";
-import { SNT_ADDRESS as SNT_AVALANCHE } from "../constants/fuji";
+import { SNT_ADDRESS as SNT_AVALANCHE } from "../constants/avalanche";
 import { ERC20 } from "../types/ERC20";
 import { Bridge as IBridge } from "../types/Bridge";
 import { Bridge__factory } from "../types/factories/Bridge__factory";

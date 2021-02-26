@@ -13,7 +13,7 @@ import { ERC20 } from './types/ERC20';
 import { Bridge as IBridge } from './types/Bridge';
 import Header from './components/Header';
 import { getSNTAvalanche, getSNTEthereum, getBridge } from './utils/contracts';
-import { goerliProvider, fujiProvider } from './utils/providers'
+import { goerliProvider, avaProvider } from './utils/providers'
 import { ethereumAddress, fujiAddress } from './constants/bridges';
 
 const { useState, useEffect } = React;
@@ -39,7 +39,7 @@ function App() {
   useEffect(() => {
     if (provider) {
       const sntEthereum: ERC20 = getSNTEthereum(goerliProvider);
-      const sntAvalanche: ERC20 = getSNTAvalanche(fujiProvider);
+      const sntAvalanche: ERC20 = getSNTAvalanche(avaProvider);
       setSntEthereum(sntEthereum);
       setSntAvalanche(sntAvalanche);
     }
@@ -47,7 +47,7 @@ function App() {
 
   useEffect(() => {
     if (!provider) return
-    const avalancheBridge: IBridge = getBridge(fujiAddress, fujiProvider);
+    const avalancheBridge: IBridge = getBridge(fujiAddress, avaProvider);
     avalancheBridge.isRelayer(account).then(isRelayer => {
       setIsRelayer(isRelayer)
     });
