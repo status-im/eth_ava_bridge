@@ -4,7 +4,8 @@ import { Provider } from "@ethersproject/providers"
 
 const networksMap: Record<number, string> = {
   5: 'goerli',
-  43113: 'fuji'
+  43113: 'fuji',
+  13375: 'stavalanche'
 }
 
 export async function getAndSetProvider(setProvider: Function) {
