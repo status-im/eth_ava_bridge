@@ -1,4 +1,4 @@
-import { Signer } from "ethers";
+import { Signer, BigNumber } from "ethers";
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import { DeployFunction, DeployResult} from 'hardhat-deploy/types';
 import { ethers, deployments, getNamedAccounts } from "hardhat";
@@ -16,6 +16,7 @@ import {
 import { getContractFromDeploy } from "../utils/deploy"
 import { SNT_ADDRESS } from "../constants/goerliAddress";
 import MintableErc20Artifacts from "../artifacts/contracts/tokens/MintableErc20.sol/MintableERC20.json";
+import { util } from "chai";
 
 
 const ETHEREUM_CHAIN_ID: number = 1;
@@ -33,7 +34,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   let sntAvalancheDeploy: DeployResult = await deploy("ERC20PresetMinterPauser", {
     from: deployer,
     args: ["SNT", "SNT"],
-    log: true
+    log: true,
   });
 
   const bridgeDeploy: DeployResult = await deploy("Bridge", {
@@ -45,7 +46,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       0,
       100
     ],
-    log: true
+    log: true,
   });
 
   const bridge: Bridge = getContractFromDeploy(bridgeDeploy, signer) as Bridge;
@@ -59,7 +60,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       [sntAvalanche.address],
       [sntAvalanche.address]
     ],
-    log: true
+    log: true,
   });
   const erc20Handler: ERC20Handler = getContractFromDeploy(erc20HandlerDeploy, signer) as ERC20Handler;
   await bridge.adminSetResource(

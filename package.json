@@ -33,7 +33,8 @@
     "frontend": "cd frontend && npm run start",
     "deploy:goerli": "hardhat deploy --network goerli --deploy-scripts deploy/Bridge.ts",
     "deploy:fuji": "hardhat deploy --network fuji --tags avalanche",
-    "deploy:fuji:reset": "hardhat deploy --network fuji --tags avalanche --reset"
+    "deploy:fuji:reset": "hardhat deploy --network fuji --tags avalanche --reset",
+    "deploy:stavalanche": "hardhat deploy --network stavalanche --tags avalanche"
   },
   "repository": {
     "type": "git",

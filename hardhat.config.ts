@@ -96,6 +96,14 @@ const config: HardhatUserConfig = {
       chainId: 0xa869,
       saveDeployments: true,
       tags: ["test"]
+    },
+    stavalanche: {
+      live: true,
+      url: process.env.STAVALANCHE,
+      accounts,
+      chainId: 13375,
+      saveDeployments: true,
+      tags: ["test"]
     }
   },
   solidity: {
