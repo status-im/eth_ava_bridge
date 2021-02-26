@@ -14,7 +14,7 @@ import { Bridge as IBridge } from './types/Bridge';
 import Header from './components/Header';
 import { getSNTAvalanche, getSNTEthereum, getBridge } from './utils/contracts';
 import { goerliProvider, avaProvider } from './utils/providers'
-import { ethereumAddress, fujiAddress } from './constants/bridges';
+import { ethereumAddress, avalancheAddress } from './constants/bridges';
 
 const { useState, useEffect } = React;
 
@@ -47,7 +47,7 @@ function App() {
 
   useEffect(() => {
     if (!provider) return
-    const avalancheBridge: IBridge = getBridge(fujiAddress, avaProvider);
+    const avalancheBridge: IBridge = getBridge(avalancheAddress, avaProvider);
     avalancheBridge.isRelayer(account).then(isRelayer => {
       setIsRelayer(isRelayer)
     });
