@@ -6,6 +6,7 @@ import { Bridge as IBridge } from "../types/Bridge";
 import { Bridge__factory } from "../types/factories/Bridge__factory";
 import { ERC20__factory } from "../types/factories/ERC20__factory";
 import { Provider } from '@ethersproject/providers';
+import { ERC20Handler__factory } from "../types/factories/ERC20Handler__factory";
 
 export const getSNTEthereum = (provider: Provider) => getSNTContract(provider, SNT_ETHEREUM);
 export const getSNTAvalanche = (provider: Provider) => getSNTContract(provider, SNT_AVALANCHE);
@@ -20,4 +21,8 @@ export const getBridge = (address: string, provider: Provider) => {
 export const getSetBalance = async (token: ERC20|undefined, account: string, setState: Function) => {
   const balance = await token?.balanceOf(account);
   setState(balance);
+}
+
+export const getERC20Handler = (address: string, provider: Provider) => {
+  return ERC20Handler__factory.connect(address, provider)
 }
