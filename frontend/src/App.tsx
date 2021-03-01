@@ -13,7 +13,7 @@ import { ERC20 } from './types/ERC20';
 import { Bridge as IBridge } from './types/Bridge';
 import Header from './components/Header';
 import { getSNTAvalanche, getSNTEthereum, getBridge } from './utils/contracts';
-import { goerliProvider, avaProvider } from './utils/providers'
+import { ethereumProvider, avaProvider } from './utils/providers'
 import { ethereumAddress, avalancheAddress } from './constants/bridges';
 
 const { useState, useEffect } = React;
@@ -21,7 +21,6 @@ const { useState, useEffect } = React;
 function App() {
   const classes: any = useStyles();
   const [provider, setProvider] = useState<Web3Provider>();
-  const [ethereumProvider, setEthereumProvider] = useState<Provider>();
   const [account, setAccount] = useState<string>('');
   const [sntEthereum, setSntEthereum] = useState<ERC20>();
   const [sntAvalanche, setSntAvalanche] = useState<ERC20>();
@@ -38,7 +37,7 @@ function App() {
 
   useEffect(() => {
     if (provider) {
-      const sntEthereum: ERC20 = getSNTEthereum(goerliProvider);
+      const sntEthereum: ERC20 = getSNTEthereum(ethereumProvider);
       const sntAvalanche: ERC20 = getSNTAvalanche(avaProvider);
       setSntEthereum(sntEthereum);
       setSntAvalanche(sntAvalanche);
@@ -51,7 +50,7 @@ function App() {
     avalancheBridge.isRelayer(account).then(isRelayer => {
       setIsRelayer(isRelayer)
     });
-    const ethereumBridge: IBridge = getBridge(ethereumAddress, provider);
+    const ethereumBridge: IBridge = getBridge(ethereumAddress, ethereumProvider);
     setEthereumBridge(ethereumBridge);
     setAvalancheBridge(avalancheBridge);
   }, [provider])
@@ -74,18 +73,18 @@ function App() {
             sntEthereum={sntEthereum}
           />
           {!!ethereumBridge && <Bridge
-            account={account}
-            provider={provider}
-            sntEthereum={sntEthereum}
-            sntAvalanche={sntAvalanche}
-            ethereumBridge={ethereumBridge}
+                                 account={account}
+                                 provider={provider}
+                                 sntEthereum={sntEthereum}
+                                 sntAvalanche={sntAvalanche}
+                                 ethereumBridge={ethereumBridge}
           />}
           {!!isRelayer &&  <AdminBridge
-                           account={account}
-                           provider={provider}
-                           sntEthereum={sntEthereum}
-                           sntAvalanche={sntAvalanche}
-                           ethereumBridge={ethereumBridge} />}
+                             account={account}
+                             provider={provider}
+                             sntEthereum={sntEthereum}
+                             sntAvalanche={sntAvalanche}
+                             ethereumBridge={ethereumBridge} />}
         </div>
       </Symfoni>
     </ThemeProvider>
