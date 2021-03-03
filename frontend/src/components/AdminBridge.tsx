@@ -15,7 +15,8 @@ import { ERC20 } from "../types/ERC20";
 import { fromWei } from "../utils/helpers"
 import { getSetBalance } from "../utils/contracts";
 import { ethereumSNTHandlerAddress } from "../constants/bridges";
-import { getDepositEvents, EnrichedEvent } from "../utils/events";
+import { getDepositEvents, EnrichedDepositEvent } from "../utils/events";
+import Deposit from "./Deposit";
 
 type IBridgeInfo = {
   amount: string,
@@ -38,11 +39,10 @@ export const AdminBridge: React.FC<Props> = ({ account, provider, sntEthereum, s
   const [fujiBridge, setFujiBridge] = useState<IBridge>();
   const [sntEthereumBalance, setSntEthereumBalance] = useState<BigNumberish>();
   const [sntAvalancheBalance, setSntAvalancheBalance] = useState<BigNumberish>();
-  const [deposits, setDeposits] = useState<EnrichedEvent[]>();
+  const [deposits, setDeposits] = useState<EnrichedDepositEvent[]>();
   const { fieldWidth } = classes;
   useEffect(() => {
     getDepositEvents(ethereumBridge, setDeposits)
-
   }, [bridge])
 
   useEffect(() => {
@@ -118,6 +118,9 @@ export const AdminBridge: React.FC<Props> = ({ account, provider, sntEthereum, s
               onBlur={handleBlur}
               value={values.account}
             />
+          {deposits?.map((d: EnrichedDepositEvent) => <Deposit
+                                                        key={d.data}
+                                                        deposit={d} />)}
             <StatusButton
               className={fieldWidth}
               buttonText="Submit"
