@@ -61,4 +61,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     sntEthereum.address
   );
 };
+func.tags = ["ethereum"];
 export default func;
