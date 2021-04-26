@@ -84,6 +84,7 @@ function App() {
                              provider={provider}
                              sntEthereum={sntEthereum}
                              sntAvalanche={sntAvalanche}
+                             avalancheBridge={avalancheBridge}
                              ethereumBridge={ethereumBridge} />}
         </div>
       </Symfoni>
