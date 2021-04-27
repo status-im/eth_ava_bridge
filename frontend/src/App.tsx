@@ -59,7 +59,7 @@ function App() {
     const ethereumBridge: IBridge = getBridge(ethereumAddress, ethereumProvider);
     setEthereumBridge(ethereumBridge);
     setAvalancheBridge(avalancheBridge);
-  }, [provider])
+  }, [account])
 
   useEffect(() => {
     if (window.ethereum && window.ethereum.selectedAddress) setAccount(window.ethereum.selectedAddress);
