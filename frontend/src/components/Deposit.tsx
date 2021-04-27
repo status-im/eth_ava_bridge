@@ -17,7 +17,7 @@ const Deposit: React.FC<Props> = ({ deposit, checked, setFieldValue }) => {
   const { decoded, depositRecord, proposal } = deposit;
   const depositNonce = decoded?.depositNonce.toString()
   return (
-    <Fragment>
+    <div className={classes.main}>
       <Checkbox
         name={depositNonce}
         checked={checked}
@@ -29,7 +29,7 @@ const Deposit: React.FC<Props> = ({ deposit, checked, setFieldValue }) => {
       {!!decoded && <Typography className={cellText}>Destination Chain: {chainIDToName[decoded?.destinationChainID]}</Typography>}
       <Typography className={cellText}>Depositer: {depositRecord?._depositer.toString()}</Typography>
       <Typography className={cellText}>Receiver: {depositRecord?._destinationRecipientAddress.toString()}</Typography>
-    </Fragment>
+    </div>
   )
 }
 

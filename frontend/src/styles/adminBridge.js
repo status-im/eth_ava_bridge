@@ -5,11 +5,8 @@ const useStyles = makeStyles(theme => ({
         display: 'grid',
         gridTemplateColumns: 'repeat(48, [col] 1fr)',
         gridColumn: '3 / 45',
-        [theme.breakpoints.up('md')]: {
-            gridTemplateRows: '3rem 6rem 6rem 5rem',
-            gridColumn: '8 / 42',
-        },
-        marginTop: '3rem'
+        marginTop: '3rem',
+        gridTemplateRows: '9em'
     },
     adornmentText: {
         cursor: 'pointer',

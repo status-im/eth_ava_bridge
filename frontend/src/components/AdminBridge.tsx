@@ -100,43 +100,25 @@ export const AdminBridge: React.FC<Props> = ({ account, provider, sntEthereum, s
       }}
     >
       {({
-      values,
-      errors,
-      handleSubmit,
-      handleChange,
-      handleBlur,
-      setFieldValue
+        values,
+        errors,
+        handleSubmit,
+        handleChange,
+        handleBlur,
+        setFieldValue
       }: FormikProps<IBridgeInfo>) => {
         return (
           <form className={classes.root} onSubmit={handleSubmit}>
-          <StatusTextField
-          className={fieldWidth}
-              name="amount"
-              label="Enter amount of SNT to send across bridge"
-              idFor="amount"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.amount}
-            />
-            <StatusTextField
+            {deposits?.map((d: EnrichedDepositEvent) => <Deposit
+                                                          key={d.data}
+                                                          checked={d.decoded?.depositNonce.toString() === values.selectedDeposit}
+                                                          setFieldValue={setFieldValue}
+                                                          deposit={d} />)}
+            <StatusButton
               className={fieldWidth}
-              name="account"
-              label="account receiving across bridge"
-              idFor="account"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.account}
+              buttonText="Submit"
+              onClick={handleSubmit}
             />
-              {deposits?.map((d: EnrichedDepositEvent) => <Deposit
-                                                            key={d.data}
-                                                            checked={d.decoded?.depositNonce.toString() === values.selectedDeposit}
-                                                            setFieldValue={setFieldValue}
-                                                            deposit={d} />)}
-              <StatusButton
-                className={fieldWidth}
-                buttonText="Submit"
-                onClick={handleSubmit}
-              />
           </form>
       )}
       }
