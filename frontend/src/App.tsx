@@ -15,6 +15,12 @@ import Header from './components/Header';
 import { getSNTAvalanche, getSNTEthereum, getBridge } from './utils/contracts';
 import { ethereumProvider, avaProvider } from './utils/providers'
 import { ethereumAddress, avalancheAddress } from './constants/bridges';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 const { useState, useEffect } = React;
 
@@ -72,20 +78,28 @@ function App() {
             enableEthereum={undefined}
             sntEthereum={sntEthereum}
           />
-          {!!ethereumBridge && <Bridge
-                                 account={account}
-                                 provider={provider}
-                                 sntEthereum={sntEthereum}
-                                 sntAvalanche={sntAvalanche}
-                                 ethereumBridge={ethereumBridge}
-          />}
-          {!!isRelayer &&  <AdminBridge
-                             account={account}
-                             provider={provider}
-                             sntEthereum={sntEthereum}
-                             sntAvalanche={sntAvalanche}
-                             avalancheBridge={avalancheBridge}
-                             ethereumBridge={ethereumBridge} />}
+          <Router>
+            <Switch>
+              <Route path="/relay">
+                {!!isRelayer &&  <AdminBridge
+                                   account={account}
+                                   provider={provider}
+                                   sntEthereum={sntEthereum}
+                                   sntAvalanche={sntAvalanche}
+                                   avalancheBridge={avalancheBridge}
+                                   ethereumBridge={ethereumBridge} />}
+              </Route>
+              <Route path="/">
+                {!!ethereumBridge && <Bridge
+                                       account={account}
+                                       provider={provider}
+                                       sntEthereum={sntEthereum}
+                                       sntAvalanche={sntAvalanche}
+                                       ethereumBridge={ethereumBridge}
+                />}
+              </Route>
+            </Switch>
+          </Router>
         </div>
       </Symfoni>
     </ThemeProvider>
